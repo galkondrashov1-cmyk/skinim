@@ -206,6 +206,52 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ collections });
     }
 
+    // Delete non-weapon items (keep only skins, knives, gloves)
+    if (action === "cleanup_non_weapons") {
+      // Types to DELETE (not weapons)
+      const typesToDelete = [
+        'Other', 'Agent', 'Sticker', 'Graffiti', 'Container',
+        'Music Kit', 'Collectible', 'Tool', 'Key', 'Pass',
+        'Gift', 'Tag', 'Charm'
+      ];
+
+      // Build the delete query
+      const placeholders = typesToDelete.map(() => '?').join(', ');
+
+      // First count how many will be deleted
+      const countResult = await client.execute({
+        sql: `SELECT COUNT(*) as count FROM items WHERE weapon_type IN (${placeholders})`,
+        args: typesToDelete,
+      });
+      const toDelete = countResult.rows[0]?.count as number || 0;
+
+      // Delete the items
+      await client.execute({
+        sql: `DELETE FROM items WHERE weapon_type IN (${placeholders})`,
+        args: typesToDelete,
+      });
+
+      // Also delete items with patches (agents with patches)
+      const patchResult = await client.execute({
+        sql: `DELETE FROM items WHERE has_patches = 1`,
+        args: [],
+      });
+
+      // Get remaining count
+      const remainingResult = await client.execute({
+        sql: `SELECT COUNT(*) as count FROM items`,
+        args: [],
+      });
+      const remaining = remainingResult.rows[0]?.count as number || 0;
+
+      return NextResponse.json({
+        success: true,
+        deleted: toDelete,
+        remaining,
+        message: `Deleted ${toDelete} non-weapon items. ${remaining} items remaining.`
+      });
+    }
+
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (error) {
     console.error("Error:", error);

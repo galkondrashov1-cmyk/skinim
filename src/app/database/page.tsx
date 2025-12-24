@@ -67,7 +67,6 @@ const RARITIES = [
 const WEAPON_TYPES = [
   "Knife",
   "Gloves",
-  "Agent",
   "Rifle",
   "Pistol",
   "SMG",
@@ -111,9 +110,7 @@ export default function DatabasePage() {
   const [floatMin, setFloatMin] = useState("");
   const [floatMax, setFloatMax] = useState("");
   const [hasStickersOnly, setHasStickersOnly] = useState(false);
-  const [hasPatchesOnly, setHasPatchesOnly] = useState(false);
   const [stickerSearch, setStickerSearch] = useState("");
-  const [patchSearch, setPatchSearch] = useState("");
   const [sortBy, setSortBy] = useState("rarity_desc");
 
   const fetchStats = async () => {
@@ -141,9 +138,7 @@ export default function DatabasePage() {
       if (floatMin) params.set("float_min", floatMin);
       if (floatMax) params.set("float_max", floatMax);
       if (hasStickersOnly) params.set("has_stickers", "true");
-      if (hasPatchesOnly) params.set("has_patches", "true");
       if (stickerSearch) params.set("sticker", stickerSearch);
-      if (patchSearch) params.set("patch", patchSearch);
       if (sortBy) params.set("sort", sortBy);
 
       const res = await fetch(`/api/items?${params.toString()}`);
@@ -168,9 +163,7 @@ export default function DatabasePage() {
     floatMin,
     floatMax,
     hasStickersOnly,
-    hasPatchesOnly,
     stickerSearch,
-    patchSearch,
     sortBy,
   ]);
 
@@ -193,9 +186,7 @@ export default function DatabasePage() {
     setFloatMin("");
     setFloatMax("");
     setHasStickersOnly(false);
-    setHasPatchesOnly(false);
     setStickerSearch("");
-    setPatchSearch("");
     setSortBy("rarity_desc");
     setPage(1);
   };
@@ -207,9 +198,7 @@ export default function DatabasePage() {
     floatMin,
     floatMax,
     hasStickersOnly,
-    hasPatchesOnly,
     stickerSearch,
-    patchSearch,
   ].filter(Boolean).length;
 
   return (
@@ -429,66 +418,33 @@ export default function DatabasePage() {
                       </div>
                     </div>
 
-                    {/* Row 3: Stickers & Patches */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Stickers */}
-                      <div>
-                        <label className="text-xs font-medium text-zinc-400 mb-2 block">מדבקות</label>
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            placeholder="חפש מדבקה..."
-                            value={stickerSearch}
-                            onChange={(e) => {
-                              setStickerSearch(e.target.value);
-                              setPage(1);
-                            }}
-                            className="flex-1 px-3 py-2 rounded-lg border border-white/10 bg-black/40 text-white text-xs placeholder-zinc-600 focus:outline-none focus:border-purple-500/50"
-                          />
-                          <button
-                            onClick={() => {
-                              setHasStickersOnly(!hasStickersOnly);
-                              setPage(1);
-                            }}
-                            className={`px-3 py-2 text-[11px] rounded-lg border transition-all whitespace-nowrap ${
-                              hasStickersOnly
-                                ? "border-purple-500 bg-purple-500/20 text-purple-400"
-                                : "border-white/10 bg-white/5 text-zinc-400 hover:border-white/20"
-                            }`}
-                          >
-                            עם מדבקות
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Patches */}
-                      <div>
-                        <label className="text-xs font-medium text-zinc-400 mb-2 block">פאטצ׳ים</label>
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            placeholder="חפש פאטצ׳..."
-                            value={patchSearch}
-                            onChange={(e) => {
-                              setPatchSearch(e.target.value);
-                              setPage(1);
-                            }}
-                            className="flex-1 px-3 py-2 rounded-lg border border-white/10 bg-black/40 text-white text-xs placeholder-zinc-600 focus:outline-none focus:border-orange-500/50"
-                          />
-                          <button
-                            onClick={() => {
-                              setHasPatchesOnly(!hasPatchesOnly);
-                              setPage(1);
-                            }}
-                            className={`px-3 py-2 text-[11px] rounded-lg border transition-all whitespace-nowrap ${
-                              hasPatchesOnly
-                                ? "border-orange-500 bg-orange-500/20 text-orange-400"
-                                : "border-white/10 bg-white/5 text-zinc-400 hover:border-white/20"
-                            }`}
-                          >
-                            עם פאטצ׳ים
-                          </button>
-                        </div>
+                    {/* Row 3: Stickers Only */}
+                    <div>
+                      <label className="text-xs font-medium text-zinc-400 mb-2 block">מדבקות</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="חפש מדבקה..."
+                          value={stickerSearch}
+                          onChange={(e) => {
+                            setStickerSearch(e.target.value);
+                            setPage(1);
+                          }}
+                          className="flex-1 px-3 py-2 rounded-lg border border-white/10 bg-black/40 text-white text-xs placeholder-zinc-600 focus:outline-none focus:border-purple-500/50"
+                        />
+                        <button
+                          onClick={() => {
+                            setHasStickersOnly(!hasStickersOnly);
+                            setPage(1);
+                          }}
+                          className={`px-3 py-2 text-[11px] rounded-lg border transition-all whitespace-nowrap ${
+                            hasStickersOnly
+                              ? "border-purple-500 bg-purple-500/20 text-purple-400"
+                              : "border-white/10 bg-white/5 text-zinc-400 hover:border-white/20"
+                          }`}
+                        >
+                          עם מדבקות
+                        </button>
                       </div>
                     </div>
                   </div>
