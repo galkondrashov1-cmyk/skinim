@@ -94,12 +94,13 @@ interface ItemCardProps {
 export function ItemCard({ item, index = 0, variant = "grid", showPrice = true }: ItemCardProps) {
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [buffPrice, setBuffPrice] = useState<number | null>(item.buff_price ?? null);
+  const [priceUsd, setPriceUsd] = useState<number | null>(null);
   const [loadingPrice, setLoadingPrice] = useState(false);
+  const [priceError, setPriceError] = useState(false);
 
-  // Fetch price if not provided and showPrice is true
+  // Fetch price if showPrice is true
   useEffect(() => {
-    if (showPrice && buffPrice === null && !loadingPrice) {
+    if (showPrice && priceUsd === null && !loadingPrice && !priceError) {
       const marketHashName = item.market_hash_name || item.name;
       if (!marketHashName) return;
 
@@ -107,14 +108,16 @@ export function ItemCard({ item, index = 0, variant = "grid", showPrice = true }
       fetch(`/api/buff-price?market_hash_name=${encodeURIComponent(marketHashName)}`)
         .then((res) => res.json())
         .then((data) => {
-          if (data.price) {
-            setBuffPrice(data.price);
+          if (data.price_usd) {
+            setPriceUsd(data.price_usd);
+          } else {
+            setPriceError(true);
           }
         })
-        .catch(console.error)
+        .catch(() => setPriceError(true))
         .finally(() => setLoadingPrice(false));
     }
-  }, [item.market_hash_name, item.name, showPrice, buffPrice, loadingPrice]);
+  }, [item.market_hash_name, item.name, showPrice, priceUsd, loadingPrice, priceError]);
 
   // Get the image URL
   const imageUrl = item.icon_url_large || item.icon_url || item.image_url;
@@ -298,25 +301,25 @@ export function ItemCard({ item, index = 0, variant = "grid", showPrice = true }
               </div>
             </div>
 
-            {/* Buff163 Price */}
+            {/* Buff163 Price in USD */}
             {showPrice && (
               <div className="mt-2 pt-2 border-t border-white/5">
                 {loadingPrice ? (
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 border border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin" />
+                    <div className="w-3 h-3 border border-green-500/30 border-t-green-500 rounded-full animate-spin" />
                     <span className="text-[10px] text-zinc-500">טוען מחיר...</span>
                   </div>
-                ) : buffPrice !== null ? (
+                ) : priceUsd !== null ? (
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-zinc-500">Buff163</span>
-                    <span className="text-sm font-bold text-yellow-500">
-                      ¥{buffPrice.toFixed(2)}
+                    <span className="text-[10px] text-zinc-500">Buff</span>
+                    <span className="text-sm font-bold text-green-500">
+                      ${priceUsd.toFixed(2)}
                     </span>
                   </div>
                 ) : (
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-zinc-500">Buff163</span>
-                    <span className="text-[10px] text-zinc-600">לא זמין</span>
+                    <span className="text-[10px] text-zinc-500">Buff</span>
+                    <span className="text-[10px] text-zinc-600">-</span>
                   </div>
                 )}
               </div>
