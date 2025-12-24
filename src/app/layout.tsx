@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "מאגר הפריטים של גל | כלי CS2",
-  description: "שלוף וייצא את פריטי ה-CS2 שלך עם ערכי Float, מצבים וסטטוס מסחר.",
+  title: "סקינים ישראל | CS2 Skins Israel",
+  description: "המאגר הגדול ביותר לסקינים של CS2 בישראל - מחירים, Float, מצבים וסטטוס מסחר.",
   icons: {
     icon: "/favicon.ico",
   },
