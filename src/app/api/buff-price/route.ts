@@ -3,6 +3,16 @@ import { client, initDatabase } from "@/lib/db";
 
 const BUFF163_API_KEY = process.env.BUFF163_API_KEY;
 const CNY_TO_USD_RATE = 0.14; // 1 CNY ≈ 0.14 USD
+const CACHE_HOURS = 72; // Price cache validity in hours
+
+// Check if price is still valid (within 72 hours)
+function isPriceValid(updatedAt: string | null): boolean {
+  if (!updatedAt) return false;
+  const updateTime = new Date(updatedAt).getTime();
+  const now = Date.now();
+  const hoursDiff = (now - updateTime) / (1000 * 60 * 60);
+  return hoursDiff < CACHE_HOURS;
+}
 
 // Get single item price from database
 export async function GET(request: NextRequest) {
@@ -26,10 +36,14 @@ export async function GET(request: NextRequest) {
 
     if (result.rows.length > 0 && result.rows[0].buff_price) {
       const price = result.rows[0].buff_price as number;
+      const updatedAt = result.rows[0].buff_price_updated_at as string | null;
+      const isValid = isPriceValid(updatedAt);
+
       return NextResponse.json({
         price,
         price_usd: price * CNY_TO_USD_RATE,
-        updated_at: result.rows[0].buff_price_updated_at
+        updated_at: updatedAt,
+        is_stale: !isValid // Flag to indicate if price needs refresh
       });
     }
 
@@ -46,6 +60,10 @@ export async function POST(request: NextRequest) {
 
   if (action === "sync") {
     return syncAllPrices();
+  }
+
+  if (action === "stats") {
+    return getPriceStats();
   }
 
   // Batch get prices from database
@@ -172,5 +190,48 @@ async function syncAllPrices() {
   } catch (error) {
     console.error("Sync error:", error);
     return NextResponse.json({ error: "Sync failed", details: String(error) }, { status: 500 });
+  }
+}
+
+// Get price statistics
+async function getPriceStats() {
+  try {
+    await initDatabase();
+
+    // Get total prices count
+    const totalResult = await client.execute({
+      sql: `SELECT COUNT(*) as total FROM prices WHERE buff_price IS NOT NULL`,
+      args: [],
+    });
+
+    // Get stale prices count (older than 72 hours)
+    const staleResult = await client.execute({
+      sql: `SELECT COUNT(*) as stale FROM prices
+            WHERE buff_price IS NOT NULL
+            AND datetime(buff_price_updated_at) < datetime('now', '-${CACHE_HOURS} hours')`,
+      args: [],
+    });
+
+    // Get last sync time
+    const lastSyncResult = await client.execute({
+      sql: `SELECT MAX(buff_price_updated_at) as last_sync FROM prices`,
+      args: [],
+    });
+
+    const total = totalResult.rows[0]?.total as number || 0;
+    const stale = staleResult.rows[0]?.stale as number || 0;
+    const lastSync = lastSyncResult.rows[0]?.last_sync as string | null;
+
+    return NextResponse.json({
+      total_prices: total,
+      stale_prices: stale,
+      fresh_prices: total - stale,
+      last_sync: lastSync,
+      cache_hours: CACHE_HOURS,
+      needs_sync: stale > 0 || total === 0
+    });
+  } catch (error) {
+    console.error("Error getting stats:", error);
+    return NextResponse.json({ error: "Failed to get stats" }, { status: 500 });
   }
 }

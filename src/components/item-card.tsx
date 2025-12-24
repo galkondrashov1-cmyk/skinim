@@ -65,6 +65,7 @@ interface StickerData {
 interface ItemCardProps {
   item: {
     id: string | number;
+    asset_id?: string;
     name: string;
     market_hash_name?: string;
     skin_name?: string;
@@ -85,11 +86,15 @@ interface ItemCardProps {
     tradable?: boolean;
     tradable_after?: string | null;
     buff_price?: number | null;
+    inspect_link?: string;
   };
   index?: number;
   variant?: "grid" | "compact";
   showPrice?: boolean;
 }
+
+// Item types that should NOT have float values
+const NON_FLOAT_TYPES = ['Other', 'Agent', 'Sticker', 'Graffiti', 'Container', 'Music Kit', 'Collectible', 'Tool', 'Key', 'Pass', 'Gift', 'Tag'];
 
 export function ItemCard({ item, index = 0, variant = "grid", showPrice = true }: ItemCardProps) {
   const [imageError, setImageError] = useState(false);
@@ -97,6 +102,9 @@ export function ItemCard({ item, index = 0, variant = "grid", showPrice = true }
   const [priceUsd, setPriceUsd] = useState<number | null>(null);
   const [loadingPrice, setLoadingPrice] = useState(false);
   const [priceError, setPriceError] = useState(false);
+  const [floatData, setFloatData] = useState<{ value: number; condition: string; seed: number | null } | null>(null);
+  const [loadingFloat, setLoadingFloat] = useState(false);
+  const [floatFetched, setFloatFetched] = useState(false);
 
   // Fetch price if showPrice is true
   useEffect(() => {
@@ -118,6 +126,55 @@ export function ItemCard({ item, index = 0, variant = "grid", showPrice = true }
         .finally(() => setLoadingPrice(false));
     }
   }, [item.market_hash_name, item.name, showPrice, priceUsd, loadingPrice, priceError]);
+
+  // Check if this item type should have a float
+  const itemType = item.weapon_type || item.type || '';
+  const shouldHaveFloat = !NON_FLOAT_TYPES.some(t => itemType.toLowerCase().includes(t.toLowerCase()));
+
+  // Fetch float if missing and item should have one
+  useEffect(() => {
+    if (
+      shouldHaveFloat &&
+      (item.float_value === null || item.float_value === undefined) &&
+      item.inspect_link &&
+      !loadingFloat &&
+      !floatFetched
+    ) {
+      setLoadingFloat(true);
+      setFloatFetched(true);
+
+      fetch('/api/float', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inspectLink: item.inspect_link }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.floatValue) {
+            setFloatData({
+              value: data.floatValue,
+              condition: data.wearName || '',
+              seed: data.paintSeed,
+            });
+
+            // Also update the database if we have asset_id
+            if (item.asset_id) {
+              fetch('/api/items/update-float', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  assetId: item.asset_id,
+                  floatValue: data.floatValue,
+                  paintSeed: data.paintSeed,
+                }),
+              }).catch(console.error);
+            }
+          }
+        })
+        .catch(console.error)
+        .finally(() => setLoadingFloat(false));
+    }
+  }, [item.float_value, item.inspect_link, item.asset_id, shouldHaveFloat, loadingFloat, floatFetched]);
 
   // Get the image URL
   const imageUrl = item.icon_url_large || item.icon_url || item.image_url;
@@ -146,8 +203,8 @@ export function ItemCard({ item, index = 0, variant = "grid", showPrice = true }
   const displayName = item.skin_name || item.name;
   const weaponType = item.weapon_type || item.type || "";
 
-  // Float value
-  const floatValue = item.float_value;
+  // Float value - use fetched data if available, otherwise use item's float
+  const floatValue = floatData?.value ?? item.float_value;
   const hasFloat = floatValue !== undefined && floatValue !== null;
 
   // Stickers/Patches
@@ -237,45 +294,34 @@ export function ItemCard({ item, index = 0, variant = "grid", showPrice = true }
 
         {/* Item info - flex-grow to fill remaining space */}
         <div className="p-3 pt-0 flex flex-col flex-grow">
-          {/* Float Scale - Fixed height container whether float exists or not */}
-          <div className="h-[42px] mb-1">
-            {hasFloat ? (
-              <div className="space-y-1">
-                <FloatScale floatValue={floatValue} size="sm" />
-                <div className="flex items-center justify-between">
-                  <span
-                    className="text-[10px] font-mono font-medium"
-                    style={{ color: getFloatColor(floatValue) }}
-                  >
-                    {floatValue.toFixed(6)}
-                  </span>
-                  {conditionShort && (
-                    <span
-                      className="text-[10px] font-bold px-1.5 py-0.5 rounded"
-                      style={{
-                        backgroundColor: `${getFloatColor(floatValue)}20`,
-                        color: getFloatColor(floatValue),
-                      }}
-                    >
-                      {conditionShort}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ) : (
-              // Empty placeholder when no float
-              <div className="flex items-center justify-center h-full">
+          {/* Float Scale - Only show when item has float value */}
+          {hasFloat && (
+            <div className="mb-2">
+              <FloatScale floatValue={floatValue} size="sm" />
+              <div className="flex items-center justify-between mt-1">
+                <span
+                  className="text-[10px] font-mono font-medium"
+                  style={{ color: getFloatColor(floatValue) }}
+                >
+                  {floatValue.toFixed(6)}
+                </span>
                 {conditionShort && (
-                  <span className="text-[10px] font-medium text-zinc-500 px-2 py-1 rounded bg-white/5">
+                  <span
+                    className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+                    style={{
+                      backgroundColor: `${getFloatColor(floatValue)}20`,
+                      color: getFloatColor(floatValue),
+                    }}
+                  >
                     {conditionShort}
                   </span>
                 )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Name and type - always at bottom */}
-          <div className="border-t border-white/5 pt-2 mt-auto">
+          <div className={cn("pt-2 mt-auto", hasFloat && "border-t border-white/5")}>
             <p
               className="text-sm font-medium text-white truncate"
               title={displayName}

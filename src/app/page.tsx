@@ -624,6 +624,7 @@ export default function Home() {
                       item={{
                         id: item.id,
                         name: item.name,
+                        market_hash_name: item.market_hash_name,
                         skin_name: item.market_name,
                         weapon_type: item.type,
                         rarity: item.rarity,

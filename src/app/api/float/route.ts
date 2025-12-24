@@ -24,26 +24,62 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Try CSFloat API
+    // Try CSFloat API with browser-like headers
     const floatUrl = `https://api.csfloat.com/?url=${encodeURIComponent(inspectLink)}`;
 
     const floatResponse = await fetch(floatUrl, {
       headers: {
         "Authorization": CSFLOAT_API_KEY,
+        "Origin": "https://csfloat.com",
+        "Referer": "https://csfloat.com/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       },
     });
 
-    if (!floatResponse.ok) {
-      // Fallback - try without auth for public endpoint
-      const publicResponse = await fetch(floatUrl);
+    if (floatResponse.ok) {
+      const floatData = await floatResponse.json();
+      return NextResponse.json({
+        success: true,
+        floatValue: floatData.iteminfo?.floatvalue || null,
+        paintSeed: floatData.iteminfo?.paintseed || null,
+        paintIndex: floatData.iteminfo?.paintindex || null,
+        wearName: floatData.iteminfo?.wear_name || null,
+      });
+    }
 
-      if (!publicResponse.ok) {
-        return NextResponse.json(
-          { error: "Failed to fetch float value", floatValue: null },
-          { status: 200 }
-        );
+    // Try alternative FloatDB API (public)
+    const floatDbUrl = `https://floatdb.me/api/v1/float?url=${encodeURIComponent(inspectLink)}`;
+    try {
+      const floatDbResponse = await fetch(floatDbUrl, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        },
+      });
+
+      if (floatDbResponse.ok) {
+        const floatDbData = await floatDbResponse.json();
+        if (floatDbData.floatvalue) {
+          return NextResponse.json({
+            success: true,
+            floatValue: floatDbData.floatvalue || null,
+            paintSeed: floatDbData.paintseed || null,
+            paintIndex: floatDbData.paintindex || null,
+            wearName: floatDbData.wear_name || null,
+          });
+        }
       }
+    } catch {
+      // FloatDB failed, continue to next fallback
+    }
 
+    // Fallback - try CSFloat without auth
+    const publicResponse = await fetch(floatUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      },
+    });
+
+    if (publicResponse.ok) {
       const publicData = await publicResponse.json();
       return NextResponse.json({
         success: true,
@@ -54,15 +90,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const floatData = await floatResponse.json();
-
-    return NextResponse.json({
-      success: true,
-      floatValue: floatData.iteminfo?.floatvalue || null,
-      paintSeed: floatData.iteminfo?.paintseed || null,
-      paintIndex: floatData.iteminfo?.paintindex || null,
-      wearName: floatData.iteminfo?.wear_name || null,
-    });
+    return NextResponse.json(
+      { error: "Failed to fetch float value", floatValue: null },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Float fetch error:", error);
     return NextResponse.json(

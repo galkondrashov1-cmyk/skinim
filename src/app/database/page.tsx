@@ -25,6 +25,7 @@ interface DatabaseItem {
   id: number;
   asset_id: string;
   name: string;
+  market_hash_name?: string;
   weapon_type: string;
   skin_name: string;
   rarity: string;
@@ -33,6 +34,7 @@ interface DatabaseItem {
   float_value: number | null;
   paint_seed: number | null;
   image_url: string;
+  inspect_link?: string;
   stickers: StickerData[] | null;
   collection: string | null;
   has_stickers: number;
@@ -523,7 +525,9 @@ export default function DatabasePage() {
                     key={item.id}
                     item={{
                       id: item.id,
+                      asset_id: item.asset_id,
                       name: item.name,
+                      market_hash_name: item.market_hash_name,
                       skin_name: item.skin_name,
                       weapon_type: item.weapon_type,
                       rarity: item.rarity,
@@ -532,6 +536,7 @@ export default function DatabasePage() {
                       float_value: item.float_value,
                       paint_seed: item.paint_seed,
                       image_url: item.image_url,
+                      inspect_link: item.inspect_link,
                       stickers: item.stickers,
                       sticker_count: item.sticker_count,
                       patch_count: item.patch_count,
