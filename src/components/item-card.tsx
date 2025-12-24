@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FloatScale, getFloatColor } from "./ui/float-scale";
 import { cn } from "@/lib/utils";
 
@@ -66,6 +66,7 @@ interface ItemCardProps {
   item: {
     id: string | number;
     name: string;
+    market_hash_name?: string;
     skin_name?: string;
     weapon_type?: string;
     type?: string;
@@ -83,14 +84,37 @@ interface ItemCardProps {
     patch_count?: number;
     tradable?: boolean;
     tradable_after?: string | null;
+    buff_price?: number | null;
   };
   index?: number;
   variant?: "grid" | "compact";
+  showPrice?: boolean;
 }
 
-export function ItemCard({ item, index = 0, variant = "grid" }: ItemCardProps) {
+export function ItemCard({ item, index = 0, variant = "grid", showPrice = true }: ItemCardProps) {
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [buffPrice, setBuffPrice] = useState<number | null>(item.buff_price ?? null);
+  const [loadingPrice, setLoadingPrice] = useState(false);
+
+  // Fetch price if not provided and showPrice is true
+  useEffect(() => {
+    if (showPrice && buffPrice === null && !loadingPrice) {
+      const marketHashName = item.market_hash_name || item.name;
+      if (!marketHashName) return;
+
+      setLoadingPrice(true);
+      fetch(`/api/buff-price?market_hash_name=${encodeURIComponent(marketHashName)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.price) {
+            setBuffPrice(data.price);
+          }
+        })
+        .catch(console.error)
+        .finally(() => setLoadingPrice(false));
+    }
+  }, [item.market_hash_name, item.name, showPrice, buffPrice, loadingPrice]);
 
   // Get the image URL
   const imageUrl = item.icon_url_large || item.icon_url || item.image_url;
@@ -273,6 +297,30 @@ export function ItemCard({ item, index = 0, variant = "grid" }: ItemCardProps) {
                 )}
               </div>
             </div>
+
+            {/* Buff163 Price */}
+            {showPrice && (
+              <div className="mt-2 pt-2 border-t border-white/5">
+                {loadingPrice ? (
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 border border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin" />
+                    <span className="text-[10px] text-zinc-500">טוען מחיר...</span>
+                  </div>
+                ) : buffPrice !== null ? (
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-zinc-500">Buff163</span>
+                    <span className="text-sm font-bold text-yellow-500">
+                      ¥{buffPrice.toFixed(2)}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-zinc-500">Buff163</span>
+                    <span className="text-[10px] text-zinc-600">לא זמין</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

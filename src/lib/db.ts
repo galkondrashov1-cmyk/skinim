@@ -132,6 +132,22 @@ export async function initDatabase() {
   // Create indexes for stickers_catalog
   await client.execute("CREATE INDEX IF NOT EXISTS idx_stickers_name ON stickers_catalog(name)");
   await client.execute("CREATE INDEX IF NOT EXISTS idx_stickers_collection ON stickers_catalog(collection)");
+
+  // Prices table for Buff163 prices
+  const createPricesTableSQL = `
+    CREATE TABLE IF NOT EXISTS prices (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      market_hash_name TEXT UNIQUE NOT NULL,
+      buff_price REAL,
+      buff_price_updated_at TEXT,
+      steam_price REAL,
+      steam_price_updated_at TEXT
+    )
+  `;
+  await client.execute(createPricesTableSQL);
+
+  // Create index for prices
+  await client.execute("CREATE INDEX IF NOT EXISTS idx_prices_market_hash ON prices(market_hash_name)");
 }
 
 export { client };
