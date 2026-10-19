@@ -544,3 +544,7 @@ textarea.k-text {
     background-position: -200% 0;
   }
 }
+
+.k-numfield {
+  display: contents;
+}

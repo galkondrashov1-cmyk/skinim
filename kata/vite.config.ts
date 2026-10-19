@@ -107,7 +107,19 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: true,
-    chunkSizeWarningLimit: 900,
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        // Stable vendor chunks: an app release does not invalidate cached libraries.
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+          if (/[\\/](react|react-dom|scheduler|zustand|use-sync-external-store)[\\/]/.test(id)) return 'react';
+          if (/[\\/](lightweight-charts|fancy-canvas)[\\/]/.test(id)) return 'charts';
+          if (/[\\/](dexie|dexie-react-hooks)[\\/]/.test(id)) return 'storage';
+          return undefined;
+        },
+      },
+    },
   },
   test: {
     environment: 'node',

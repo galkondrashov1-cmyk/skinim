@@ -8,7 +8,7 @@ import { useActiveAccount, useApp } from '@/store/app';
 import { actions } from '@/store/runtime';
 import { useUI, type Palette, type Theme } from '@/store/ui';
 import { fmtDateTime, fmtMoney, parseNum } from '@/lib/format';
-import { Button, cx, Dialog, Field, NumberInput, Segmented, Switch, TextInput } from '@/ui/primitives';
+import { Button, cx, Dialog, Field, NumberField, NumberInput, Segmented, Switch, TextInput } from '@/ui/primitives';
 import { navigate, useRoute } from '@/app/router';
 import { InstallDialog } from '@/app/InstallDialog';
 import { useInstallState } from '@/app/install';
@@ -276,17 +276,12 @@ function SaveBar({ dirty, onSave, onReset }: { dirty: boolean; onSave: () => voi
   );
 }
 
-const pctField = (v: number | null) => (v == null ? '' : String(v));
-
 function Risk() {
   const { a, cfg, setCfg, dirty, save } = useConfigEditor();
   if (!a || !cfg) return null;
   const r = cfg.risk;
   const set = (patch: Partial<AccountConfig['risk']>) => setCfg({ ...cfg, risk: { ...r, ...patch } });
-  const opt = (s: string) => {
-    const x = parseNum(s);
-    return Number.isFinite(x) && x > 0 ? x : null;
-  };
+  const pos = (x: number | null) => (x != null && x > 0 ? x : null);
   return (
     <>
       {a.locked && (
@@ -302,16 +297,16 @@ function Risk() {
       )}
       <Block title="Discipline rules" desc={`Rules apply to ${a.name}. Leave a limit empty to switch it off.`}>
         <Row label="Daily loss limit" hint="Locks new entries for the rest of the UTC day once equity falls this far below the day’s start.">
-          <NumberInput value={pctField(r.dailyLossLimitPct)} onChange={(v) => set({ dailyLossLimitPct: opt(v) })} step={0.5} suffix="% of equity" ariaLabel="Daily loss limit" placeholder="Off" />
+          <NumberField allowEmpty value={r.dailyLossLimitPct} onChange={(v) => set({ dailyLossLimitPct: pos(v) })} step={0.5} suffix="% of equity" ariaLabel="Daily loss limit" placeholder="Off" />
         </Row>
         <Row label="Max drawdown" hint="Locks the account when equity falls this far below its peak, until you review it.">
-          <NumberInput value={pctField(r.maxDrawdownPct)} onChange={(v) => set({ maxDrawdownPct: opt(v) })} step={1} suffix="% from peak" ariaLabel="Max drawdown" placeholder="Off" />
+          <NumberField allowEmpty value={r.maxDrawdownPct} onChange={(v) => set({ maxDrawdownPct: pos(v) })} step={1} suffix="% from peak" ariaLabel="Max drawdown" placeholder="Off" />
         </Row>
         <Row label="Max risk per trade" hint="Rejects entries whose loss at the stop (or margin, without a stop) exceeds this share of equity.">
-          <NumberInput value={pctField(r.maxRiskPerTradePct)} onChange={(v) => set({ maxRiskPerTradePct: opt(v) })} step={0.25} suffix="% of equity" ariaLabel="Max risk per trade" placeholder="Off" />
+          <NumberField allowEmpty value={r.maxRiskPerTradePct} onChange={(v) => set({ maxRiskPerTradePct: pos(v) })} step={0.25} suffix="% of equity" ariaLabel="Max risk per trade" placeholder="Off" />
         </Row>
         <Row label="Max open positions" hint="Positions plus working entry orders.">
-          <NumberInput value={pctField(r.maxOpenPositions)} onChange={(v) => set({ maxOpenPositions: opt(v) ? Math.round(opt(v)!) : null })} step={1} ariaLabel="Max open positions" placeholder="Off" />
+          <NumberField allowEmpty value={r.maxOpenPositions} onChange={(v) => set({ maxOpenPositions: pos(v) == null ? null : Math.max(1, Math.round(v!)) })} step={1} ariaLabel="Max open positions" placeholder="Off" />
         </Row>
         <Row label="Require a stop-loss" hint="Every entry must carry a stop.">
           <Switch checked={r.requireStopLoss} onChange={(v) => set({ requireStopLoss: v })} label="Require a stop-loss" />
@@ -328,10 +323,7 @@ function Risk() {
 function Costs() {
   const { a, cfg, setCfg, dirty, save } = useConfigEditor();
   if (!a || !cfg) return null;
-  const num = (s: string, fallback: number) => {
-    const x = parseNum(s);
-    return Number.isFinite(x) && x >= 0 ? x : fallback;
-  };
+  const num = (x: number | null) => (x != null && Number.isFinite(x) && x >= 0 ? x : 0);
   return (
     <>
       <Block
@@ -339,27 +331,27 @@ function Costs() {
         desc="Defaults mirror a typical crypto derivatives venue’s entry tier. Market and stop orders pay taker; resting limits and take-profits pay maker. Funding and borrow costs are not modelled."
       >
         <Row label="Taker fee">
-          <NumberInput value={String(+(cfg.takerFee * 100).toFixed(4))} onChange={(v) => setCfg({ ...cfg, takerFee: num(v, 0) / 100 })} step={0.005} suffix="%" ariaLabel="Taker fee percent" />
+          <NumberField value={+(cfg.takerFee * 100).toFixed(4)} onChange={(v) => setCfg({ ...cfg, takerFee: num(v) / 100 })} step={0.005} suffix="%" ariaLabel="Taker fee percent" />
         </Row>
         <Row label="Maker fee">
-          <NumberInput value={String(+(cfg.makerFee * 100).toFixed(4))} onChange={(v) => setCfg({ ...cfg, makerFee: num(v, 0) / 100 })} step={0.005} suffix="%" ariaLabel="Maker fee percent" />
+          <NumberField value={+(cfg.makerFee * 100).toFixed(4)} onChange={(v) => setCfg({ ...cfg, makerFee: num(v) / 100 })} step={0.005} suffix="%" ariaLabel="Maker fee percent" />
         </Row>
         <Row label="Slippage" hint="Applied against you on market and stop fills, on top of the real bid/ask spread.">
-          <NumberInput value={String(cfg.slippageBps)} onChange={(v) => setCfg({ ...cfg, slippageBps: num(v, 0) })} step={0.5} suffix="bp" ariaLabel="Slippage in basis points" />
+          <NumberField value={cfg.slippageBps} onChange={(v) => setCfg({ ...cfg, slippageBps: num(v) })} step={0.5} suffix="bp" ariaLabel="Slippage in basis points" />
         </Row>
       </Block>
       <Block title="Margin" desc="Isolated margin per position. Liquidation forfeits that position’s margin, never more.">
         <Row label="Maintenance margin" hint="Liquidation triggers when margin + unrealized P&L falls to this share of notional.">
-          <NumberInput
-            value={String(+(cfg.maintenanceMargin * 100).toFixed(3))}
-            onChange={(v) => setCfg({ ...cfg, maintenanceMargin: Math.min(0.5, num(v, 0.5) / 100) })}
+          <NumberField
+            value={+(cfg.maintenanceMargin * 100).toFixed(3)}
+            onChange={(v) => setCfg({ ...cfg, maintenanceMargin: Math.min(0.5, num(v) / 100) })}
             step={0.1}
             suffix="%"
             ariaLabel="Maintenance margin percent"
           />
         </Row>
         <Row label="Maximum leverage">
-          <NumberInput value={String(cfg.maxLeverage)} onChange={(v) => setCfg({ ...cfg, maxLeverage: Math.max(1, Math.min(125, Math.round(num(v, 1)))) })} step={1} suffix="×" ariaLabel="Maximum leverage" />
+          <NumberField value={cfg.maxLeverage} onChange={(v) => setCfg({ ...cfg, maxLeverage: Math.max(1, Math.min(125, Math.round(num(v) || 1))) })} step={1} suffix="×" ariaLabel="Maximum leverage" />
         </Row>
       </Block>
       <SaveBar dirty={dirty} onSave={save} onReset={() => setCfg(a.config)} />
@@ -401,7 +393,7 @@ function Appearance() {
         <Switch checked={confirmOrders} onChange={(v) => useUI.setState({ confirmOrders: v })} label="Confirm orders" />
       </Row>
       <Row label="Default leverage">
-        <NumberInput value={String(lev)} onChange={(v) => useUI.setState({ defaultLeverage: Math.max(1, Math.min(125, Math.round(parseNum(v) || 1))) })} step={1} suffix="×" ariaLabel="Default leverage" />
+        <NumberField value={lev} onChange={(v) => useUI.setState({ defaultLeverage: Math.max(1, Math.min(125, Math.round(v ?? 1) || 1)) })} step={1} suffix="×" ariaLabel="Default leverage" />
       </Row>
       <Row label="Keyboard" hint="B / S side · M / L / T order type · / search instruments · ↑↓ nudge a focused chart level, Enter to commit">
         <span />

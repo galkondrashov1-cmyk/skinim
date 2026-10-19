@@ -45,7 +45,7 @@ let toastSeq = 0;
 
 export function pushToast(n: Notice) {
   const t: Toast = { ...n, id: ++toastSeq, ts: Date.now() };
-  useApp.setState((s) => ({ toasts: [...s.toasts.slice(-4), t] }));
+  useApp.setState((s) => ({ toasts: [...s.toasts.slice(-2), t] }));
   return t.id;
 }
 

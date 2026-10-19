@@ -19,8 +19,8 @@
   /* Type — washi paper */
   --fg-0: #ece7dc;
   --fg-1: #b3aea4;
-  --fg-2: #7f7b73;
-  --fg-3: #56534e;
+  --fg-2: #8a867d; /* ≥ 4.8:1 on panels: the floor for small text */
+  --fg-3: #56534e; /* decorative only: rules, placeholders, inactive marks */
 
   /* Information colours */
   /* Direction pair validated (OKLab CVD ΔE 9.9 deutan) for the dark surface. */
@@ -99,13 +99,14 @@
   --line-2: #cbc5b8;
   --fg-0: #15171b;
   --fg-1: #474a50;
-  --fg-2: #77797d;
+  --fg-2: #66686c;
   --fg-3: #a6a5a2;
-  --up: #179765;
+  /* Validated pair (CVD ΔE 8.6); both clear 4.5:1 as text on paper. */
+  --up: #0e7a56;
   --down: #b63517;
   --up-ink: #f2fbf6;
   --down-ink: #fdf1ed;
-  --up-wash: rgb(23 151 101 / 0.1);
+  --up-wash: rgb(14 122 86 / 0.1);
   --down-wash: rgb(182 53 23 / 0.1);
   --order: #2d5fb8;
   --order-wash: rgb(45 95 184 / 0.1);
@@ -136,7 +137,7 @@
 }
 :root[data-theme='light'][data-palette='colorblind'] {
   --up: #1f58b6;
-  --down: #c5770f;
+  --down: #a35f05;
   --up-ink: #f1f5fc;
   --down-ink: #fdf5ea;
   --order: #6a4fc4;

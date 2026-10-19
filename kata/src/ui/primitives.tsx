@@ -193,6 +193,52 @@ export function NumberInput({
   );
 }
 
+/**
+ * NumberInput bound to a number. Keeps the user's text while they type (so
+ * "0." or "2.5" can be entered) and re-syncs from the value when not focused.
+ */
+export function NumberField({
+  value,
+  onChange,
+  allowEmpty = false,
+  ...rest
+}: {
+  value: number | null;
+  onChange: (v: number | null) => void;
+  allowEmpty?: boolean;
+} & Omit<Parameters<typeof NumberInput>[0], 'value' | 'onChange'>) {
+  const show = (v: number | null) => (v == null ? '' : String(v));
+  const [text, setText] = useState(show(value));
+  const editing = useRef(false);
+  useEffect(() => {
+    if (!editing.current) setText(show(value));
+  }, [value]);
+  return (
+    <div
+      className="k-numfield"
+      onFocusCapture={() => (editing.current = true)}
+      onBlurCapture={() => {
+        editing.current = false;
+        setText(show(value));
+      }}
+    >
+      <NumberInput
+        {...rest}
+        value={text}
+        onChange={(t) => {
+          setText(t);
+          if (!t.trim()) {
+            if (allowEmpty) onChange(null);
+            return;
+          }
+          const x = parseNum(t);
+          if (Number.isFinite(x)) onChange(x);
+        }}
+      />
+    </div>
+  );
+}
+
 export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={cx('k-text', props.className)} />;
 }

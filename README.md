@@ -1,3 +1,5 @@
+> **Kata — paper trading PWA** lives in [`kata/`](kata/README.md): a standalone Vite app with its own toolchain (`cd kata && npm install && npm run dev`). Everything below describes the original Next.js app in this repository.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

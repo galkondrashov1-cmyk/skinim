@@ -440,7 +440,7 @@
   width: 22px;
   height: 22px;
   border-radius: 2px;
-  color: var(--fg-3);
+  color: var(--fg-2);
 }
 .tbl-note.is-on {
   color: var(--fg-0);
@@ -583,7 +583,7 @@
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--fg-3);
+    color: var(--fg-2);
     margin-bottom: 1px;
   }
   .tbl td:first-child {

@@ -121,6 +121,22 @@ test('risk rules are enforced by the ticket', async ({ page }) => {
   await expect(page.getByTestId('tk-submit')).toBeEnabled();
 });
 
+test('settings accept decimal input and persist', async ({ page }) => {
+  await openAccount(page);
+  await page.goto('/#/settings/costs');
+  const taker = page.getByRole('textbox', { name: 'Taker fee percent' });
+  await taker.click();
+  await taker.pressSequentially('0.04', { delay: 30 });
+  await expect(taker).toHaveValue('0.04');
+  const slip = page.getByRole('textbox', { name: 'Slippage in basis points' });
+  await slip.click();
+  await slip.pressSequentially('2.5', { delay: 30 });
+  await page.getByTestId('settings-save').click();
+  await page.reload();
+  await expect(page.getByRole('textbox', { name: 'Taker fee percent' })).toHaveValue('0.04');
+  await expect(page.getByRole('textbox', { name: 'Slippage in basis points' })).toHaveValue('2.5');
+});
+
 test('orders resting while the app was closed are reconciled from real candle history', async ({ page }) => {
   await openAccount(page);
   // A tight bracket on a simulated instrument.

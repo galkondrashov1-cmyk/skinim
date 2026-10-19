@@ -267,7 +267,9 @@ function Toasts() {
   const toasts = useApp((s) => s.toasts);
   useEffect(() => {
     if (!toasts.length) return;
-    const timers = toasts.map((t) => setTimeout(() => dismissToast(t.id), t.level === 'error' ? 7000 : 4500));
+    // Each toast lives for its own duration from when it appeared; new ones never extend old ones.
+    const now = Date.now();
+    const timers = toasts.map((t) => setTimeout(() => dismissToast(t.id), Math.max(0, (t.level === 'error' ? 7000 : 4000) - (now - t.ts))));
     return () => timers.forEach(clearTimeout);
   }, [toasts]);
   return (

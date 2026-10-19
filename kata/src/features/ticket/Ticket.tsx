@@ -5,14 +5,14 @@ import { useActiveEngine } from '@/store/app';
 import { useInstrument, useQuote } from '@/store/market';
 import { actions, engineContext } from '@/store/runtime';
 import { useTicket, useUI, type SizeMode } from '@/store/ui';
-import { fmtMoney, fmtNum, fmtPct, fmtPrice, fmtQty, parseNum } from '@/lib/format';
-import { Button, cx, Dialog, Field, NumberInput, Segmented, Switch } from '@/ui/primitives';
+import { fmtMoney, fmtNum, fmtPct, fmtPrice, fmtQty } from '@/lib/format';
+import { Button, cx, Dialog, Field, NumberField, NumberInput, Segmented, Switch } from '@/ui/primitives';
 import { useMetrics, useSourceOf } from '@/app/hooks';
 import { SourceTag } from '@/app/SourceTag';
 import { resolveTicket } from './resolve';
 import './ticket.css';
 
-const LEVERAGE_STEPS = [1, 2, 3, 5, 10, 20, 50];
+const LEVERAGE_STEPS = [1, 2, 3, 5, 10, 20, 50, 100];
 
 export function Ticket({ onPlaced }: { onPlaced?: () => void }) {
   const symbol = useUI((s) => s.symbol);
@@ -222,9 +222,9 @@ export function Ticket({ onPlaced }: { onPlaced?: () => void }) {
           </label>
         </div>
         {d.trailOn && (
-          <NumberInput
-            value={String(d.trail.value)}
-            onChange={(v) => d.set({ trail: { mode: 'percent', value: parseNum(v) || 0 } })}
+          <NumberField
+            value={d.trail.value}
+            onChange={(v) => d.set({ trail: { mode: 'percent', value: v ?? 0 } })}
             step={0.1}
             suffix="% trail"
             ariaLabel="Trailing distance in percent"

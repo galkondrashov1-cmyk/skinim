@@ -95,7 +95,7 @@
   display: flex;
   justify-content: flex-end;
 }
-.sv-row-c > .k-num {
+.sv-row-c .k-num {
   width: 100%;
 }
 .sv-save {
