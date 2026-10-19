@@ -12,7 +12,6 @@ import { useIsMobile, useMetrics } from './hooks';
 import { SourceTag } from './SourceTag';
 import { InstallDialog } from './InstallDialog';
 import { useInstallState } from './install';
-import { useServiceWorker } from './sw';
 import { TradeView } from '@/features/trade/TradeView';
 import './shell.css';
 
@@ -30,7 +29,6 @@ const NAV: { view: View; label: string; icon: IconName }[] = [
 export function Shell() {
   const route = useRoute();
   const isMobile = useIsMobile();
-  useServiceWorker();
   useEffect(() => {
     document.title = `${NAV.find((n) => n.view === route.view)?.label ?? 'Trade'} · Kata`;
   }, [route.view]);

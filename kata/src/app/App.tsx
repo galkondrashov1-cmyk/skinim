@@ -5,6 +5,7 @@ import { useUI } from '@/store/ui';
 import { Shell } from './Shell';
 import { Welcome } from './Welcome';
 import { Blocked, BootError } from './Gates';
+import { useServiceWorker } from './sw';
 
 const STEPS = ['Loading', 'Claiming this window', 'Opening your books', 'Connecting to market data', 'Reconciling time away'];
 
@@ -59,6 +60,8 @@ export function App() {
   const phase = useApp((s) => s.phase);
   useSplash();
   useTheme();
+  // Register at launch so the welcome screen is already installable and offline-capable.
+  useServiceWorker();
   useEffect(() => {
     void boot();
   }, []);
