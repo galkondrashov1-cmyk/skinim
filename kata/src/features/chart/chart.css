@@ -1,0 +1,368 @@
+.cp {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  background: var(--ink-1);
+}
+.cp-body {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ── Header ───────────────────────────────────────────────────────── */
+
+.ch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 42px;
+  padding: 0 8px 0 10px;
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+.ch-symbol {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  height: 30px;
+  padding: 0 8px;
+  margin-left: -4px;
+  border-radius: var(--r-1);
+  color: var(--fg-0);
+  white-space: nowrap;
+}
+.ch-symbol:hover {
+  background: var(--ink-3);
+}
+.ch-symbol svg {
+  align-self: center;
+  margin-left: 4px;
+  color: var(--fg-2);
+}
+.ch-sym {
+  font-weight: 600;
+  font-size: var(--fs-lg);
+  letter-spacing: 0.01em;
+}
+.ch-quote {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+}
+.ch-price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.ch-last {
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  padding: 1px 3px;
+  margin: 0 -3px;
+  border-radius: 2px;
+}
+.ch-chg {
+  font-size: var(--fs-xs);
+}
+.ch-stats {
+  display: flex;
+  gap: 16px;
+  padding-left: 10px;
+  border-left: 1px solid var(--line);
+  min-width: 0;
+  overflow: hidden;
+}
+.ch-stats span {
+  display: grid;
+  gap: 0;
+}
+.ch-stats i {
+  font-style: normal;
+  font-size: 9.5px;
+}
+.ch-stats b {
+  font-weight: 400;
+  font-size: var(--fs-xs);
+  color: var(--fg-1);
+  white-space: nowrap;
+}
+.ch-sp {
+  flex: 1;
+}
+.ch-tf {
+  display: flex;
+  gap: 1px;
+}
+.ch-tf-i {
+  height: 26px;
+  min-width: 30px;
+  padding: 0 6px;
+  border-radius: var(--r-1);
+  color: var(--fg-2);
+  font-family: var(--font-num);
+  font-size: var(--fs-xs);
+}
+.ch-tf-i:hover {
+  color: var(--fg-0);
+}
+.ch-tf-i.is-on {
+  color: var(--fg-0);
+  background: var(--ink-3);
+  box-shadow: inset 0 0 0 1px var(--line-2);
+}
+
+@media (max-width: 1380px) {
+  .ch-stats span:nth-child(n + 3) {
+    display: none;
+  }
+}
+@media (max-width: 1180px) {
+  .ch-stats {
+    display: none;
+  }
+}
+@media (max-width: 899px) {
+  .ch {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 6px 6px 0 8px;
+    gap: 6px 10px;
+  }
+  .ch-sp {
+    display: none;
+  }
+  .ch-tf {
+    order: 10;
+    flex: 1 1 auto;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+  .ch-tf-i {
+    flex: 1;
+  }
+}
+
+/* ── Inspect banner ───────────────────────────────────────────────── */
+
+.cp-inspect {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding: 6px 8px 6px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--ink-2);
+  font-size: var(--fs-sm);
+}
+.cp-inspect-trade {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.cp-inspect-sp {
+  flex: 1;
+}
+
+/* ── Canvas ───────────────────────────────────────────────────────── */
+
+.cc {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.cc-host {
+  position: absolute;
+  inset: 0;
+}
+.cc-legend {
+  position: absolute;
+  z-index: 3;
+  top: 6px;
+  left: 10px;
+  right: 90px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  font-size: var(--fs-xs);
+  color: var(--fg-1);
+  pointer-events: none;
+}
+.cc-legend i {
+  font-style: normal;
+  color: var(--fg-3);
+  margin-right: 3px;
+}
+.cc-legend-ind {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+}
+.cc-legend-ind b {
+  font-weight: 400;
+  margin-right: 6px;
+}
+.cc-state {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--ink-1) 82%, transparent);
+}
+.cc-error {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  max-width: 360px;
+  padding: 16px;
+  text-align: center;
+}
+.cc-error-title {
+  font-weight: 600;
+}
+.cc-error-msg {
+  font-size: var(--fs-xs);
+  color: var(--down);
+  word-break: break-word;
+}
+.cc-error p {
+  margin: 2px 0 6px;
+  font-size: var(--fs-xs);
+  color: var(--fg-2);
+  line-height: 1.5;
+}
+
+/* ── Level overlay ────────────────────────────────────────────────── */
+
+.lo {
+  position: absolute;
+  z-index: 4;
+  inset: 0 var(--axis-w, 60px) 0 0;
+  pointer-events: none;
+}
+.lo-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 0;
+  visibility: hidden;
+  will-change: transform;
+}
+.lo-hit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -4px;
+  height: 8px;
+  pointer-events: auto;
+  cursor: ns-resize;
+  touch-action: none;
+}
+.lo-pill {
+  --c: var(--fg-1);
+  position: absolute;
+  left: 8px;
+  top: -10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 20px;
+  padding: 0 2px 0 7px;
+  max-width: calc(100% - 16px);
+  border: 1px solid var(--c);
+  border-radius: 2px;
+  background: var(--ink-1);
+  color: var(--fg-0);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+  pointer-events: auto;
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.25);
+  touch-action: none;
+  user-select: none;
+}
+.lo-row--up .lo-pill {
+  --c: var(--up);
+}
+.lo-row--down .lo-pill {
+  --c: var(--down);
+}
+.lo-row--order .lo-pill {
+  --c: var(--order);
+}
+.lo-row--liq .lo-pill {
+  --c: var(--liq);
+  opacity: 0.85;
+}
+.lo-row--draft .lo-pill {
+  --c: var(--fg-2);
+  border-style: dashed;
+}
+.lo-row.is-draggable .lo-pill {
+  cursor: ns-resize;
+}
+.lo-row.is-dragging .lo-pill {
+  background: var(--ink-3);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 22%, transparent);
+}
+.lo-pill:focus-visible {
+  outline: 1px solid var(--c);
+  outline-offset: 2px;
+}
+.lo-grip {
+  width: 6px;
+  height: 9px;
+  margin-right: -1px;
+  background: radial-gradient(circle, var(--c) 0.8px, transparent 1px) 0 0 / 3px 3px;
+  opacity: 0.85;
+}
+.lo-label {
+  color: var(--c);
+  font-weight: 600;
+  font-family: var(--font-label);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 10.5px;
+}
+.lo-detail {
+  color: var(--fg-1);
+}
+.lo-act {
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 1px;
+  background: var(--ink-3);
+  color: var(--fg-0);
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.lo-act:hover {
+  background: var(--ink-4);
+}
+.lo-x {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 1px;
+  color: var(--fg-2);
+}
+.lo-x:hover {
+  color: var(--fg-0);
+  background: var(--ink-4);
+}
+
+@media (pointer: coarse) {
+  .lo-pill {
+    height: 26px;
+    top: -13px;
+  }
+  .lo-x,
+  .lo-act {
+    height: 22px;
+    min-width: 22px;
+  }
+}

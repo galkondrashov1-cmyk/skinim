@@ -1,0 +1,80 @@
+.k-src {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 2px;
+  font-family: var(--font-label);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border: 1px solid currentColor;
+  --c: var(--fg-2);
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 9%, transparent);
+  border-color: color-mix(in srgb, var(--c) 35%, transparent);
+}
+.k-src-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c);
+  flex: none;
+}
+.k-src-text {
+  color: var(--c);
+}
+.k-src-detail {
+  font-family: var(--font-num);
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+  color: var(--fg-1);
+}
+.k-src--live {
+  --c: var(--up);
+}
+.k-src--live .k-src-dot {
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--up) 60%, transparent);
+  animation: k-live 2.4s ease-out infinite;
+}
+.k-src--delayed {
+  --c: var(--warn);
+}
+.k-src--simulated {
+  --c: var(--sim);
+  background: var(--hatch), var(--sim-wash);
+}
+.k-src--simulated .k-src-dot {
+  border-radius: 0;
+  transform: rotate(45deg);
+}
+.k-src--replay {
+  --c: var(--order);
+}
+.k-src--offline,
+.k-src--connecting {
+  --c: var(--fg-2);
+}
+.k-src--offline .k-src-dot {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--c);
+}
+.k-src--compact {
+  padding: 0;
+  width: 18px;
+  justify-content: center;
+}
+
+@keyframes k-live {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--up) 55%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 5px transparent;
+  }
+}

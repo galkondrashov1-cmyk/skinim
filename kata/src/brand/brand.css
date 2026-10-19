@@ -1,0 +1,74 @@
+.k-mark {
+  display: block;
+  flex: none;
+  overflow: visible;
+}
+.k-mark line,
+.k-mark polyline {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.8;
+  stroke-linejoin: miter;
+}
+.k-mark rect {
+  fill: currentColor;
+}
+
+.k-word {
+  display: block;
+  flex: none;
+  fill: currentColor;
+}
+
+.k-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--fg-0);
+}
+
+.k-loader {
+  display: inline-grid;
+  justify-items: center;
+  gap: 10px;
+  color: var(--fg-1);
+}
+.k-loader-label {
+  color: var(--fg-2);
+}
+
+.k-mark--loading .k-mark-tp,
+.k-mark--loading .k-mark-sl {
+  stroke-dasharray: 44;
+  animation: k-bracket 1500ms var(--ease) infinite;
+}
+.k-mark--loading .k-mark-sl {
+  animation-delay: 120ms;
+}
+.k-mark--loading .k-mark-body {
+  transform-origin: 12px 24.5px;
+  animation: k-body 1500ms var(--ease) infinite;
+}
+
+@keyframes k-bracket {
+  0% {
+    stroke-dashoffset: 44;
+  }
+  45%,
+  70% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -44;
+  }
+}
+@keyframes k-body {
+  0%,
+  100% {
+    transform: scaleY(0.55);
+  }
+  45%,
+  70% {
+    transform: scaleY(1);
+  }
+}

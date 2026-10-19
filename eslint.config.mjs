@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Kata (paper-trading PWA) is a separate Vite app with its own toolchain.
+    "kata/**",
   ]),
 ]);
 

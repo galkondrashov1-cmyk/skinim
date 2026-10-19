@@ -1,0 +1,247 @@
+.jv {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 1px;
+  background: var(--line);
+}
+.jv-empty {
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+.jv-list {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  background: var(--ink-1);
+}
+.jv-list-h {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.jv-tags,
+.je-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.jv-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--line-2);
+  border-radius: 11px;
+  color: var(--fg-1);
+  font-size: var(--fs-xs);
+  text-transform: lowercase;
+}
+.jv-tag:hover {
+  color: var(--fg-0);
+}
+.jv-tag.is-on {
+  border-color: var(--fg-1);
+  background: var(--ink-3);
+  color: var(--fg-0);
+}
+.jv-tag.is-bad {
+  border-color: color-mix(in srgb, var(--down) 55%, transparent);
+  background: var(--down-wash);
+}
+.jv-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+.jv-item {
+  display: grid;
+  gap: 3px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  border-left: 2px solid transparent;
+  text-decoration: none;
+  color: inherit;
+}
+.jv-item:hover {
+  background: var(--ink-2);
+}
+.jv-item.is-on {
+  background: var(--ink-2);
+  border-left-color: var(--fg-0);
+}
+.jv-item-top,
+.jv-item-bot {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.jv-item-sym {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+.jv-item-bot {
+  font-size: var(--fs-xs);
+}
+.jv-item-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: var(--fs-xs);
+  color: var(--fg-1);
+}
+.jv-item-note b {
+  font-weight: 500;
+}
+.jv-item-note i {
+  font-style: normal;
+  color: var(--fg-2);
+}
+.jv-item-note i::before {
+  content: '#';
+}
+.jv-detail {
+  min-height: 0;
+  overflow: auto;
+  background: var(--ink-1);
+}
+
+.je {
+  display: grid;
+  gap: 0;
+  max-width: 1100px;
+}
+.je-h {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.je-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+.je-title h1 {
+  margin: 0;
+  font-size: var(--fs-lg);
+  font-weight: 600;
+}
+.je-title h1 .faint {
+  font-weight: 400;
+  text-transform: capitalize;
+}
+.je-result {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.je-net {
+  font-size: var(--fs-xl);
+  font-weight: 500;
+}
+.je-chart {
+  position: relative;
+  height: 300px;
+  border-bottom: 1px solid var(--line);
+}
+.je-facts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.je-fact {
+  display: grid;
+  gap: 3px;
+  padding: 9px 12px;
+  background: var(--ink-1);
+}
+.je-fact dd {
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+.je-form {
+  padding: 14px 16px 24px;
+}
+.je-form-h {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+.je-saved {
+  font-size: var(--fs-xs);
+}
+.je-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 16px;
+}
+.je-f {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.je-f--wide {
+  grid-column: 1 / -1;
+}
+.je-tagbox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--h-control);
+  padding: 3px 6px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-1);
+  background: var(--ink-2);
+}
+.je-tagbox input {
+  flex: 1;
+  min-width: 80px;
+  height: 22px;
+}
+.je-rating {
+  display: flex;
+  gap: 4px;
+}
+.je-rate {
+  width: 30px;
+  height: 26px;
+  border: 1px solid var(--line-2);
+  border-radius: 1px;
+  color: var(--fg-2);
+}
+.je-rate.is-on {
+  background: var(--fg-0);
+  border-color: var(--fg-0);
+  color: var(--ink-0);
+}
+
+@media (max-width: 899px) {
+  .jv {
+    grid-template-columns: 1fr;
+  }
+  .je-grid {
+    grid-template-columns: 1fr;
+  }
+  .je-chart {
+    height: 240px;
+  }
+  .je-h {
+    padding: 10px 12px;
+  }
+}

@@ -1,0 +1,144 @@
+/*
+ * Kata design tokens — "Ink & Paper".
+ * The brand itself is monochrome. Chroma is reserved for information:
+ * direction/P&L (up/down), working orders (order), data honesty (warn, sim).
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces — sumi ink */
+  --ink-0: #0b0d10;
+  --ink-1: #101317;
+  --ink-2: #151920;
+  --ink-3: #1b2028;
+  --ink-4: #232934;
+  --line: #20252d;
+  --line-2: #2c323c;
+
+  /* Type — washi paper */
+  --fg-0: #ece7dc;
+  --fg-1: #b3aea4;
+  --fg-2: #7f7b73;
+  --fg-3: #56534e;
+
+  /* Information colours */
+  /* Direction pair validated (OKLab CVD ΔE 9.9 deutan) for the dark surface. */
+  --up: #05ab86;
+  --down: #e4583a;
+  --up-ink: #03140f;
+  --down-ink: #1c0805;
+  --up-wash: rgb(5 171 134 / 0.13);
+  --down-wash: rgb(228 88 58 / 0.13);
+  --order: #7fa7e6;
+  --order-wash: rgb(127 167 230 / 0.12);
+  --warn: #e2a73e;
+  --warn-wash: rgb(226 167 62 / 0.12);
+  --sim: #9aa4b5;
+  --sim-wash: rgb(154 164 181 / 0.1);
+  --liq: #d46a9c;
+
+  /* Primary action = paper on ink */
+  --accent: var(--fg-0);
+  --accent-ink: var(--ink-0);
+
+  --focus: #ece7dc;
+  --scrim: rgb(5 6 8 / 0.62);
+  --shadow-float: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 12px 32px rgb(0 0 0 / 0.45), 0 2px 6px rgb(0 0 0 / 0.35);
+
+  /* Type */
+  --font-ui: 'Barlow', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-label: 'Barlow Semi Condensed', 'Barlow', ui-sans-serif, system-ui, sans-serif;
+  --font-num: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --fs-micro: 10.5px;
+  --fs-xs: 11.5px;
+  --fs-sm: 12.5px;
+  --fs-md: 13.5px;
+  --fs-lg: 15px;
+  --fs-xl: 19px;
+  --fs-2xl: 26px;
+
+  /* Space (4px grid) */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+
+  --r-1: 2px;
+  --r-2: 4px;
+  --r-3: 6px;
+
+  --h-control: 30px;
+  --h-control-sm: 24px;
+  --h-header: 44px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --t-fast: 110ms;
+  --t-med: 180ms;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  --hatch: repeating-linear-gradient(-45deg, transparent 0 3px, rgb(154 164 181 / 0.22) 3px 4px);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --ink-0: #efece5;
+  --ink-1: #f7f5f0;
+  --ink-2: #ffffff;
+  --ink-3: #ebe7de;
+  --ink-4: #e2ddd2;
+  --line: #ddd8cd;
+  --line-2: #cbc5b8;
+  --fg-0: #15171b;
+  --fg-1: #474a50;
+  --fg-2: #77797d;
+  --fg-3: #a6a5a2;
+  --up: #179765;
+  --down: #b63517;
+  --up-ink: #f2fbf6;
+  --down-ink: #fdf1ed;
+  --up-wash: rgb(23 151 101 / 0.1);
+  --down-wash: rgb(182 53 23 / 0.1);
+  --order: #2d5fb8;
+  --order-wash: rgb(45 95 184 / 0.1);
+  --warn: #9b6300;
+  --warn-wash: rgb(155 99 0 / 0.1);
+  --sim: #5d6778;
+  --sim-wash: rgb(93 103 120 / 0.08);
+  --liq: #a33a6e;
+  --accent: #15171b;
+  --accent-ink: #f7f5f0;
+  --focus: #15171b;
+  --scrim: rgb(30 28 24 / 0.35);
+  --shadow-float: 0 12px 32px rgb(40 34 20 / 0.16), 0 2px 6px rgb(40 34 20 / 0.12);
+  --hatch: repeating-linear-gradient(-45deg, transparent 0 3px, rgb(93 103 120 / 0.2) 3px 4px);
+}
+
+/* Colour-vision-deficiency-safe direction colours (blue / orange). */
+:root[data-palette='colorblind'] {
+  --up: #5590f3;
+  --down: #c26e12;
+  --up-wash: rgb(85 144 243 / 0.13);
+  --down-wash: rgb(194 110 18 / 0.13);
+  --up-ink: #050d1c;
+  --down-ink: #170c02;
+  /* Blue now means "up", so working orders move to violet. */
+  --order: #b5a0ff;
+  --order-wash: rgb(181 160 255 / 0.12);
+}
+:root[data-theme='light'][data-palette='colorblind'] {
+  --up: #1f58b6;
+  --down: #c5770f;
+  --up-ink: #f1f5fc;
+  --down-ink: #fdf5ea;
+  --order: #6a4fc4;
+  --order-wash: rgb(106 79 196 / 0.1);
+}
